@@ -1,12 +1,14 @@
 Council Request Classifier Project for BCIT601
 
 API uses FastAPI, joblib and Scikit-learn. See API/requirements.txt for exact requirements.
+
 #To run:
 Run server with "python -m uvicorn main:app" or from API folder; use "py" in place of python if that alias is set.
 To shutdown:
 Press ctrl+c
 
 #API endpoints.
+
 /health returns "status": "ok" if model is loaded
 /categories returns "category_list": [] with list of model categories
 /predict is used to submit requests for predictions. Able to perform standard string cleaning.
