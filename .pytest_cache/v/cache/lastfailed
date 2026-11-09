@@ -1,0 +1,4 @@
+{
+  "tests/tests.py::test_get_confidence_feedback[0.35-expected1]": true,
+  "tests/tests.py::test_get_confidence_feedback[0.3-expected2]": true
+}
