@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from API_lib import get_confidence_feedback
 
 #local testing
-LOCAL_TESTING = False
+LOCAL_TESTING = True
 
 #To run:
 # py -m uvicorn main:app --reload

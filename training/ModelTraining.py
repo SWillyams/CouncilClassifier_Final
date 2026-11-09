@@ -65,3 +65,6 @@ if run_test_mlp_classifier:
 
 if test_model_on_new_data:
     validate_trained_model("_NB","city_council_service_requests_gemini.csv")
+
+data_size, success_count = test_data_size()
+export_cols_to_csv("test_data_size.csv",data_size,success_count)

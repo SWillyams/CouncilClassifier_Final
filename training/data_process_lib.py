@@ -81,7 +81,7 @@ def export_cols_to_csv(filename: str, *cols) -> None:
 
 
 
-def advanced_testing( #Added lemmatization
+def advanced_testing(
         model_type='log_reg',
         min_word_count=1,
         ngram_max=1,
@@ -384,3 +384,60 @@ def validate_trained_model(version_suffix='',csv='BCIT601_starter_service_reques
         if predictions[0] == correct_cat:
             success_count += 1
     print(f"{success_count} successful {version_suffix} predictions")
+
+def test_data_size(min=2, max=15, step=1):
+    """Disclaimer AI generated this function.
+    Return total training sizes and LOOCV successes for balanced subsets.
+
+    min, max, and step are measured in examples per category.
+    """
+    requests, categories = get_clean_df_arrays("OrderedTrainingData.csv")
+    category_values = categories.unique()
+    category_counts = {
+        category: int((categories == category).sum())
+        for category in category_values
+    }
+
+    if min < 1 or max < min or step < 1:
+        raise ValueError("min and step must be positive, and max must be at least min")
+    smallest_category_count = (
+        sorted(category_counts.values())[0] if category_counts else 0
+    )
+    if max > smallest_category_count:
+        raise ValueError(
+            "max cannot exceed the number of examples available in every category"
+        )
+
+    data_size_list = []
+    success_count_list = []
+    for examples_per_category in range(min, max + 1, step):
+        x_data = []
+        y_data = []
+        for category in category_values:
+            category_requests = requests[categories == category].tolist()
+            x_data.extend(category_requests[:examples_per_category])
+            y_data.extend([category] * examples_per_category)
+
+        success_count = 0
+        for held_out_index, held_out_request in enumerate(x_data):
+            x_train = [
+                request for index, request in enumerate(x_data)
+                if index != held_out_index
+            ]
+            y_train = [
+                category for index, category in enumerate(y_data)
+                if index != held_out_index
+            ]
+            vectorizer = TfidfVectorizer()
+            classifier = LogisticRegression()
+            x_train_vectorized = vectorizer.fit_transform(x_train)
+            x_test_vectorized = vectorizer.transform([held_out_request])
+            classifier.fit(x_train_vectorized, y_train)
+            prediction = classifier.predict(x_test_vectorized)[0]
+            if prediction == y_data[held_out_index]:
+                success_count += 1
+
+        data_size_list.append(len(x_data))
+        success_count_list.append(success_count)
+
+    return data_size_list, success_count_list
